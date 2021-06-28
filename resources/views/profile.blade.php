@@ -1,6 +1,6 @@
 @extends('layouts.base')
 
-@section('title')Регистрация@endsection
+@section('title')Профиль@endsection
 
 @section('content')
     ЛК
