@@ -48,6 +48,14 @@ Route::name('user.')->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
 });
 
+/**
+ * TODO:
+ * Создание
+ * Отображение
+ * Отдельное отображение
+ * Добавление комментов
+ * Изменение, удаление всего?
+ */
 
 
 
