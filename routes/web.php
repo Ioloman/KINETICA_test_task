@@ -8,10 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-
 // Главная страница
 Route::get('/', function () {
-    return view('home', ['posts' => Post::all()->sortByDesc('created_at')]);
+    return view('home', ['posts' => Post::orderBy('created_at', 'DESC')->paginate(10)]);
 })->name('homepage');
 
 /**
@@ -19,19 +18,25 @@ Route::get('/', function () {
  */
 Route::name('user.')->group(function () {
     // Профиль, доступный только авторизованным пользователям, благодаря middleware auth
-    Route::view('/profile', 'profile')->middleware('auth')->name('profile');
+    Route::get('/profile', function (){
+        return view('profile', ['posts' => Post::where('user_id', Auth::id())->orderBy('created_at', 'DESC')->get()]);
+    })->middleware('auth')->name('profile');
 
     // Страница входа
     Route::get('/login', function () {
-        if (Auth::check())
+        if (Auth::check()) {
             return redirect(\route('user.profile'));
+        }
+
         return view('login');
     })->name('login');
 
     // Страница регистрации
     Route::get('/signup', function () {
-        if (Auth::check())
+        if (Auth::check()) {
             return redirect(\route('user.profile'));
+        }
+
         return view('signup');
     })->name('signup');
 
@@ -39,7 +44,7 @@ Route::name('user.')->group(function () {
     Route::post('/signup', [RegistrationController::class, 'register']);
 
     // Выход из аккаунта
-    Route::get('/logout', function (Request $request){
+    Route::get('/logout', function (Request $request) {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -50,18 +55,21 @@ Route::name('user.')->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
 });
 
-
-Route::name('post.')->group(function () {
+// Группа действий с постом
+Route::name('post.')->middleware('auth')->group(function () {
+    // Контроллер для создание поста
     Route::post('/new-post', [PostController::class, 'create'])->name('create');
+
+    Route::get('/post/{post}', function (Post $post) {
+        return view('post', ['post' => $post]);
+    })->name('get');
+
+    Route::post('/post/{post}/comment', [PostController::class, 'comment'])->name('addComment');
+
+
 });
 
 /**
  * TODO:
- * Отображение
- * Отдельное отображение
- * Добавление комментов
  * Изменение, удаление всего?
  */
-
-
-

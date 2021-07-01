@@ -43,9 +43,9 @@
                         </div>
                     </div>
 
-                    @foreach($posts as $post)
-                        @include('inc.post', ['post' => $post])
-                    @endforeach
+                    @each('inc.post', $posts, 'post')
+
+                    {{ $posts->onEachSide(3)->links('pagination::bootstrap-4') }}
 
                 </div>
             </div>
@@ -90,10 +90,20 @@
                     if (data.error) {
                         alert(data.error);
                     } else {
+                        // Добавить в начало созданный пост и убрать с конца последний
                         const card = $(data);
                         card.hide();
-                        $('div.card:first').before(card);
+                        const lastCard = $('div.card#post:last');
+                        const firstCard =  $('div.card#post:first');
+                        if (firstCard.length > 0)
+                            firstCard.before(card);
+                        else
+                            card.insertAfter($('#textEditorModal'));
                         card.slideDown(400);
+                        if (lastCard.length > 0){
+                            lastCard.slideUp(400);
+                            lastCard.remove();
+                        }
                     }
                 }).fail((jqXHR, textStatus, error) => {
                     alert(`${textStatus} - ${error}`)
