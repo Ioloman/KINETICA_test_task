@@ -43,7 +43,9 @@
                         </div>
                     </div>
 
-                    @yield('posts')
+                    @foreach($posts as $post)
+                        @include('inc.post', ['post' => $post])
+                    @endforeach
 
                 </div>
             </div>

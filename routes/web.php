@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\RegistrationController;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -9,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 // Главная страница
 Route::get('/', function () {
-    return view('home');
+    return view('home', ['posts' => Post::all()->sortByDesc('created_at')]);
 })->name('homepage');
 
 /**
@@ -48,9 +50,13 @@ Route::name('user.')->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
 });
 
+
+Route::name('post.')->group(function () {
+    Route::post('/new-post', [PostController::class, 'create'])->name('create');
+});
+
 /**
  * TODO:
- * Создание
  * Отображение
  * Отдельное отображение
  * Добавление комментов
