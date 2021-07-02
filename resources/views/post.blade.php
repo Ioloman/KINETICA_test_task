@@ -6,10 +6,10 @@
 <div class="container py-4 w-75">
     <div class="p-5 mb-4 rounded-3 bg-light row">
         <div class="py-5">
-            <h1 class="display-5 fw-bold">{{ $post->title }}</h1>
-            <p class="text-muted">Автор: {{ $post->user->name }}</p>
+            <h1 class="display-5 fw-bold text-break">{{ $post->title }}</h1>
+            <p class="text-muted text-break">Автор: {{ $post->user->name }}</p>
             <small class="text-muted">{{ $post->created_at->isoFormat('DD.MM.YYYY в hh:mm') }}</small>
-            <p class="col-md-8 fs-4">{!! $post->text !!}</p>
+            <p class="col-md-8 fs-4 text-break">{!! $post->text !!}</p>
         </div>
     </div>
 
@@ -35,6 +35,7 @@
 @section('javascript')
     <script>
         $(document).ready(() => {
+            $('p.text-break').nextAll().addClass('text-break');
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
