@@ -9,7 +9,7 @@
             <h1 class="display-5 fw-bold text-break">{{ $post->title }}</h1>
             <p class="text-muted text-break">Автор: {{ $post->user->name }}</p>
             <small class="text-muted">{{ $post->created_at->isoFormat('DD.MM.YYYY в hh:mm') }}</small>
-            <p class="col-md-8 fs-4 text-break">{!! $post->text !!}</p>
+            <div class="col-md-8 fs-4 text-break">{!! $post->text !!}</div>
         </div>
     </div>
 
@@ -35,14 +35,21 @@
 @section('javascript')
     <script>
         $(document).ready(() => {
-            $('p.text-break').nextAll().addClass('text-break');
+            // Для отправки post запроса устанавливаем в заголовок csrf токен
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+            /**
+             * event handler для отправки комментария на сервер
+             * с помощью ajax с последующей добавкой комментария (при успехе)
+             * на страницу
+             **/ 
             $('#sendComment').on('click', function () {
+                // находим элемент, в котором находится комментарий
                 const textfield = $('#comment');
+                // если поле пустое
                 if (textfield.val().length < 1)
                     alert('Введите что-нибудь!');
                 else
@@ -54,15 +61,18 @@
                         if (data.error) {
                             alert(data.error);
                         } else {
-                            // Добавить в начало созданный пост и убрать с конца последний
+                            // создаем jQuery элемент комментария
                             const comment = $(data);
                             comment.hide();
+                            // вставляем его в DOM
                             const firstComment = $('div.card#comment:first');
                             if (firstComment.length > 0) 
                                 firstComment.before(comment);
                             else
                                 comment.appendTo($('#commentSection'));
+                            // анимация добавления
                             comment.slideDown(400);
+                            // обновляем счетчик комментариев
                             const counter = $('data-counter');
                             counter.text(Number.parseInt(counter.text()) + 1);
                             textfield.val('');

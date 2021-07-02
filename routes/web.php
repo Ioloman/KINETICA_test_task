@@ -60,16 +60,11 @@ Route::name('post.')->middleware('auth')->group(function () {
     // Контроллер для создание поста
     Route::post('/new-post', [PostController::class, 'create'])->name('create');
 
+    // View поста
     Route::get('/post/{post}', function (Post $post) {
         return view('post', ['post' => $post]);
     })->name('get');
 
+    // Контроллер создания комментария
     Route::post('/post/{post}/comment', [PostController::class, 'comment'])->name('addComment');
-
-
 });
-
-/**
- * TODO:
- * Изменение, удаление всего?
- */

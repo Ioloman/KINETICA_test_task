@@ -56,6 +56,9 @@
 @section('javascript')
     <script src="{{ URL::to('js/packages/tinymce/tinymce.min.js') }}"></script>
     <script>
+        /**
+         * Инициализация текстового редактора
+         **/ 
         $(document).ready(() => {
             const editor_config = {
                 path_absolute: "{{ URL::to('/') }}/",
@@ -76,11 +79,18 @@
     </script>
     <script>
         $(document).ready(() => {
+            // Для отправки post запроса устанавливаем в заголовок csrf токен
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+            /**
+             * event handler для отправки поста на сервер
+             * с помощью ajax с последующей добавкой поста (при успехе)
+             * на страницу
+             **/ 
             $('#editorSend').on('click', function () {
                 $.ajax({
                     type: 'POST',
@@ -90,17 +100,21 @@
                     if (data.error) {
                         alert(data.error);
                     } else {
-                        // Добавить в начало созданный пост и убрать с конца последний
+                        // создаем jquery элемент поста
                         const card = $(data);
                         card.hide();
+                        // добавляем его на страницу
                         const lastCard = $('div.card#post:last');
                         const firstCard =  $('div.card#post:first');
                         if (firstCard.length > 0)
                             firstCard.before(card);
                         else
                             card.insertAfter($('#textEditorModal'));
+                        // анимация
                         card.slideDown(400);
-                        if (lastCard.length > 0){
+                        // т. к. на странице показываеься 10 постов, убираем последний, если их 10
+                        const amountOfPosts = $('div.card#post').length;
+                        if (amountOfPosts >= 10){
                             lastCard.slideUp(400);
                             lastCard.remove();
                         }
@@ -108,6 +122,7 @@
                 }).fail((jqXHR, textStatus, error) => {
                     alert(`${textStatus} - ${error}`)
                 });
+                // сразу после отправки ajax запроса убираем модальное окно с редактором
                 bootstrap.Modal.getInstance(document.getElementById('textEditorModal')).hide();
             });
         })

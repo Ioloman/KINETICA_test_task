@@ -11,10 +11,19 @@ class Comment extends Model
 
     protected $fillable = ['text'];
 
+    /**
+     * Обратное отношение для доступа к посту
+     *
+     */
     public function post(){
         return $this->belongsTo(Post::class);
     }
 
+    /**
+     * Обратное отношение для доступа к владельцу
+     *
+     * @return void
+     */
     public function user(){
         return $this->belongsTo(User::class);
     }
